@@ -1,7 +1,12 @@
-# مساعد المذاكرة (Java + HTML + CSS)
-محتاج Java 17+ فقط. من مجلد المشروع:
-1. حط الـ 5 PDF بأسمائهم الأصلية في `pdfs/`.
-2. استخراج النص (مرة واحدة، بياخد ساعات): ثبّت Tesseract (مع لغة ara) وpoppler ثم `java Ingest.java` (بيكمّل من حيث وقف).
-3. شغّل الموقع: Windows: `set ANTHROPIC_API_KEY=مفتاحك` ثم `java Server.java` — Mac/Linux: `ANTHROPIC_API_KEY=مفتاحك java Server.java`
-4. افتح http://localhost:3000
-.
+# مساعد المذاكرة (HTML + CSS + JavaScript)
+
+هذا الفولدر بالكامل هو الموقع. لازم يترفع على **جذر** المستودع أو فرع `gh-pages`، مش جوّه فولدر فرعي زي `j/`.
+
+## تشغيل محلي / نشر
+1. حط ملفات الـ PDF في `pdfs/` بنفس الأسماء المذكورة في أول `app.js`.
+2. حط نص الكتب في `data/pages.js` (متغيّر `PAGES_DATA`، مش JSON عادي، عشان الموقع يشتغل حتى بفتح `index.html` مباشرة من جهازك).
+3. ارفع **كل** محتويات هذا الفولدر (بما فيها `.nojekyll`) لجذر المستودع.
+4. Settings → Pages → Source: Deploy from branch → اختر الفرع والمجلد `/ (root)`.
+5. افتح الموقع، اضغط ⚙️، وحط مفتاح Anthropic API بتاعك (بيتخزن في متصفحك فقط).
+
+⚠️ ملف `.nojekyll` مهم: من غيره GitHub Pages بيشغّل Jekyll، ولو مفيش `index.html` في الجذر بيعرض الـ README بدل الموقع الحقيقي — وده اللي كان بيحصل.

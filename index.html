@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مساعد المذاكرة</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>📚 مساعد المذاكرة - أول ثانوي</h1>
+  <button id="settingsBtn" title="الإعدادات">⚙️</button>
+</header>
+<section id="settings" hidden>
+  <label>مفتاح Anthropic API الخاص بك (بيتحفظ في متصفحك فقط)</label>
+  <input id="key" type="password" placeholder="sk-ant-..." dir="ltr">
+  <button id="saveKey">حفظ</button>
+</section>
+<nav id="tabs"><button data-t="book" class="on">📖 الكتاب</button><button data-t="chat">💬 المساعد</button></nav>
+<div id="app" class="show-book">
+  <section id="viewer">
+    <div id="books"></div>
+    <div id="bar">
+      <button id="prev">▶</button>
+      <input id="pn" type="number" min="1" value="1"><span id="pt"></span>
+      <button id="next">◀</button>
+      <button id="zo">−</button><button id="zi">+</button>
+    </div>
+    <div id="wrap"><p id="vmsg">اختار كتاب من فوق عشان يفتح هنا 📖</p><canvas id="cv" hidden></canvas></div>
+  </section>
+  <section id="side">
+    <main id="chat"></main>
+    <form id="form">
+      <select id="book"></select>
+      <textarea id="q" rows="2" placeholder="اكتب سؤالك هنا..." required></textarea>
+      <button>إرسال</button>
+    </form>
+  </section>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="data/pages.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
