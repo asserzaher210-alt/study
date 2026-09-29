@@ -3,64 +3,119 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2b59c3">
+<meta name="theme-color" content="#0f766e">
 <title>مساعد المذاكرة</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M9 8h11a3 3 0 0 1 3 3v13H12a3 3 0 0 1-3-3z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M9 21a3 3 0 0 1 3-3h11' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <div class="brand"><span class="logo">📚</span><div><h1>مساعد المذاكرة</h1><small>الصف الأول الثانوي</small></div></div>
-  <button id="settingsBtn" class="icon" title="الإعدادات" aria-label="الإعدادات">⚙️</button>
+  <div class="brand"><span class="logo"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><div><h1>مساعد المذاكرة</h1><small>الصف الأول الثانوي</small></div></div>
+  <div class="hbtns"><button id="themeBtn" class="icon" title="الوضع الليلي/النهاري" aria-label="الوضع الليلي/النهاري"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><button id="settingsBtn" class="icon" title="الإعدادات" aria-label="الإعدادات"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></button></div>
 </header>
 
 <section id="settings" hidden>
-  <label for="key">مفتاح Anthropic API الخاص بك <small>(بيتحفظ في متصفحك فقط)</small></label>
-  <div class="row">
-    <input id="key" type="password" placeholder="sk-ant-..." dir="ltr">
-    <button id="saveKey">حفظ</button>
+  <div class="sc">
+    <h2><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg> الذكاء الاصطناعي</h2>
+    <div class="f"><label for="prov">المزوّد</label>
+    <select id="prov"><option value="free">🆓 مجاني بدون تسجيل ولا مفتاح ولا تحميل (الافتراضي)</option><option value="puter">✨ «ذكي» — سحابي مجاني بدون مفتاح (بيشوف الصور، ومبيحملش على جهازك)</option><option value="gemini">Gemini من Google (مجاني)</option><option value="claude">Claude (مفتاح مدفوع)</option></select></div>
+    <div id="gHelp">١) افتح <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" dir="ltr">aistudio.google.com/apikey</a> وسجّل بحساب جوجل. ٢) اضغط Create API key. ٣) انسخ المفتاح والصقه تحت. من غير كارت ولا فلوس.</div>
+    <div id="pRow" hidden>
+      <div class="row"><select id="pmodel"></select><button id="psign" type="button">تسجيل دخول Puter</button></div>
+      <div id="pstat" class="vnow"></div>
+      <small>بيشتغل عن طريق Puter.js: مفيش مفتاح ولا Gemini. كل مستخدم بيستخدم حسابه المجاني على Puter (بيتعمل لك تلقائيًا أول مرة). الشغل كله على سيرفراتهم فجهازك مبيتحملش حاجة.</small>
+    </div>
+    <div id="lRow" hidden>
+      <div class="row"><select id="lmodel"></select><button id="lload" type="button">حمّل الآن</button></div>
+      <div id="lstat" class="vnow"></div>
+      <small>بيشتغل جوه جهازك بـ WebGPU: مفيش حد يومي ومفيش مفتاح وكلامك مبيتبعتش لحد. التحميل مرة واحدة بس. ملحوظة: مبيشوفش الصور، بيقرا نص الصفحة من الـ PDF.</small>
+    </div>
+    <div id="keyRow" class="row"><input id="key" type="password" dir="ltr" aria-label="مفتاح API"><button id="saveKey">حفظ</button></div>
+    <small id="keyNote">المفتاح بيتحفظ في متصفحك بس.</small>
+  </div>
+  <div id="vrow" class="sc">
+    <h2><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="10" x2="4" y2="14"/><line x1="8" y1="6" x2="8" y2="18"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="16" y1="7" x2="16" y2="17"/><line x1="20" y1="10" x2="20" y2="14"/></svg> الصوت</h2>
+    <div class="f"><label for="vsel">صوت الـ AI</label>
+      <div class="row"><select id="vsel"></select><button id="vtest" type="button">جرّب</button></div></div>
+    <div class="f2">
+      <div class="f"><label for="vrate">السرعة</label>
+        <select id="vrate"><option value="0.8">بطيء</option><option value="0.9">أهدى شوية</option><option value="1" selected>عادي</option><option value="1.15">أسرع شوية</option><option value="1.3">سريع</option></select></div>
+      <div class="f"><label for="vmix">الإنجليزي جوه الكلام العربي</label>
+        <select id="vmix"><option value="split">بصوت إنجليزي منفصل (أوضح)</option><option value="single">بنفس الصوت (أسلس)</option></select></div>
+    </div>
+    <div id="vnow" class="vnow"></div>
+    <small>أفضل نتيجة على Edge (ويندوز): «سلمى» و«شاكر» المصريين. الأصوات المحلية بتشتغل من غير مفتاح ولا حد.</small>
+    <div id="gkRow" class="row" hidden><input id="gk" type="password" dir="ltr" placeholder="مفتاح Gemini للصوت (AIza...)"><button id="gkSave" type="button">حفظ</button></div>
   </div>
 </section>
 
 <nav id="tabs">
-  <button data-t="book" class="on">📖 الكتاب</button>
-  <button data-t="chat">💬 المساعد</button>
+  <button data-t="book" class="on"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الكتاب</button>
+  <button data-t="chat"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> المساعد</button>
 </nav>
 
 <div id="app" class="show-book">
   <section id="viewer">
     <div id="books"></div>
     <div id="bar">
-      <button id="prev" class="icon" title="الصفحة السابقة">▶</button>
+      <button id="prev" class="icon" title="الصفحة السابقة" aria-label="الصفحة السابقة"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
       <input id="pn" type="number" min="1" value="1" aria-label="رقم الصفحة"><span id="pt"></span>
-      <button id="next" class="icon" title="الصفحة التالية">◀</button>
+      <button id="next" class="icon" title="الصفحة التالية" aria-label="الصفحة التالية"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
       <span class="sep"></span>
-      <button id="zo" class="icon" title="تصغير">−</button>
-      <button id="zi" class="icon" title="تكبير">+</button>
-      <a id="openTab" class="icon" target="_blank" rel="noopener" title="فتح في تبويب جديد" hidden>↗</a>
+      <button id="zo" class="icon" title="تصغير" aria-label="تصغير"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      <button id="zi" class="icon" title="تكبير" aria-label="تكبير"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      <button id="swap" class="icon" title="إضافة كتب (PDF) من جهازك" aria-label="إضافة كتب"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>
+      <button id="addAll" class="icon" title="إضافة كتب (PDF) من جهازك" aria-label="إضافة كتب"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+      <button id="solve" class="accent" title="حل كل أسئلة الصفحة"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.7 1.8L21.5 17.5l-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7z"/></svg> حل الصفحة</button>
+      <button id="explain" class="accent" title="شرح الدرس بصوت المدرّس"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> اشرح الدرس</button>
+    </div>
+    <div id="tools">
+      <button type="button" class="t on" data-tool="select" title="تحديد / اسأل AI / تمرير" aria-label="تحديد"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l7.07 17 2.51-7.39L21 11.07z"/></svg></button>
+      <button type="button" class="t" data-tool="pen" title="قلم" aria-label="قلم"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      <button type="button" class="t" data-tool="hl" title="هايلايتر" aria-label="هايلايتر"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg></button>
+      <button type="button" class="t" data-tool="text" title="اكتب نص" aria-label="نص"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></button>
+      <button type="button" class="t" data-tool="eraser" title="ممحاة" aria-label="ممحاة"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20H7L3 16a2 2 0 0 1 0-2.8L13.2 3a2 2 0 0 1 2.8 0l5 5a2 2 0 0 1 0 2.8L11 21"/><line x1="8" y1="8" x2="16" y2="16"/></svg></button>
+      <span class="sep"></span>
+      <span id="colors"></span>
+      <input id="sz" type="range" min="1" max="3" value="2" title="سُمك القلم / حجم الخط" aria-label="السُمك">
+      <span class="sep"></span>
+      <button type="button" id="undo" class="t" title="تراجع (Ctrl+Z)" aria-label="تراجع"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
+      <button type="button" id="clr" class="t" title="مسح كتابة الصفحة" aria-label="مسح"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </div>
     <div id="wrap">
-      <div id="vmsg"><div class="big">📖</div><p>اختار كتاب من فوق عشان يفتح هنا</p></div>
-      <canvas id="cv" hidden></canvas>
+      <div id="vmsg"><div class="big"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><h3>ابدأ من هنا</h3><p>اختار كتاب من فوق عشان يفتح هنا</p><p style="margin-top:16px"><button id="addAll2"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> إضافة كل الكتب مرة واحدة</button><br><small>اختار الـ 5 ملفات مرة واحدة، وهيتحفظوا في المتصفح</small></p></div>
+      <div id="pages" hidden></div>
     </div>
   </section>
 
   <section id="side">
     <main id="chat"></main>
     <form id="form">
-      <select id="book" aria-label="الكتاب"></select>
+      <div id="vstatus" hidden><span id="vtext"></span><button type="button" id="vstop" class="ghost">⏹ إيقاف</button></div>
+      <div class="row">
+        <select id="book" aria-label="الكتاب"></select>
+        <button type="button" id="spk" class="icon" title="قراءة الردود بصوت عالي" aria-label="قراءة تلقائية"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button>
+        <button type="button" id="talk" class="icon" title="محادثة صوتية (اتكلم والـ AI يرد بصوته)" aria-label="محادثة صوتية"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M21 15a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2zM3 15a2 2 0 0 0 2 2h1v-6H5a2 2 0 0 0-2 2z"/></svg></button>
+      </div>
       <div class="row">
         <textarea id="q" rows="2" placeholder="اكتب سؤالك هنا..." required></textarea>
+        <div class="col"><button type="button" id="mic" class="icon" title="اكتب بصوتك" aria-label="ميكروفون"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button><button type="button" id="lang" class="icon" title="لغة الميكروفون">ع</button></div>
         <button id="send">إرسال</button>
       </div>
     </form>
   </section>
 </div>
 
+<input id="files" type="file" accept="application/pdf,.pdf" multiple hidden>
+<input id="file" type="file" accept="application/pdf,.pdf" hidden>
 <script src="lib/pdf.min.js"></script>
 <script src="data/pages.js"></script>
+
 <script src="app.js"></script>
+<script src="ink.js"></script>
+<script src="voice.js"></script>
 </body>
 </html>
