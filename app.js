@@ -1,4 +1,4 @@
-const MODEL = "claude-sonnet-5";
+const MODEL = "claude-sonnet-5-5";
 const FILES = { arabic:"الاضواء_عربي_1ث.pdf", history:"الامتحان_تاريخ_1ث.pdf", philosophy:"الامتحان_فلسفه_1ث.pdf",
   technology:"فائز_تكنولجيا_1ث.pdf", english:"المعاصر_انجليزي_1ث.pdf" };
 const NAMES = { arabic:"اللغة العربية (الأضواء)", history:"التاريخ (الامتحان)", philosophy:"الفلسفة (الامتحان)",
@@ -29,38 +29,79 @@ function load() {
   $("book").innerHTML = "<option value=''>كل الكتب</option>" + books.map(([id,n]) => `<option value="${id}">${n}</option>`).join("");
   $("books").innerHTML = books.map(([id,n]) => `<button data-id="${id}">📖 ${n}</button>`).join("");
   $("books").onclick = e => { const id = e.target.dataset?.id; if (id) openBook(id, 1); };
-  showTab("chat"); if (innerWidth > 800) showTab("book");
+  showTab("book");
   add("a","أهلًا! اكتب سؤالك أو سؤال الامتحان وأنا أجاوب وأشرحه من الكتب. لو مش فاهم قولي «اشرحلي» 👋");
 }
 const pdf = id => "pdfs/" + encodeURIComponent(FILES[id]||"");
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-let doc = null, cur = { id:null, page:1 }, zoom = 1, task = null;
+// مكتبة pdf.js محلية في lib/ (مش من CDN) عشان الموقع ميعتمدش على إنترنت خارجي
+pdfjsLib.GlobalWorkerOptions.workerSrc = "lib/pdf.worker.min.js";
+let doc = null, cur = { id:null, page:1 }, zoom = 1, task = null, renderId = 0;
+const docs = {};   // كاش للكتب اللي اتفتحت
 function showTab(t) { $("app").className = "show-" + t; document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.t === t)); }
+
+function viewerMsg(html, cls = "") { const v = $("vmsg"); v.className = cls; v.innerHTML = html; v.hidden = false; $("cv").hidden = true; }
+function errText(err) {
+  const n = err?.name || "";
+  if (location.protocol === "file:")
+    return `المتصفح بيمنع فتح ملفات الـ PDF لما الموقع يتفتح مباشرة من الجهاز (file://).<br>شغّل الموقع من سيرفر: افتح الـ Terminal جوه الفولدر واكتب <b dir="ltr">python -m http.server</b> وبعدين افتح <b dir="ltr">http://localhost:8000</b>، أو ارفعه على GitHub Pages.`;
+  if (n === "MissingPDFException" || /404/.test(err?.message||""))
+    return "ملف الـ PDF مش موجود على الموقع. اتأكد إن فولدر <b dir='ltr'>pdfs</b> اترفع وإن اسم الملف مطابق تمامًا.";
+  if (n === "InvalidPDFException") return "الملف موجود بس مش PDF سليم (ممكن يكون الرفع ناقص أو الملف اتقطع).";
+  if (n === "UnexpectedResponseException") return "السيرفر رد بخطأ وقت تحميل الكتاب. جرّب تعمل تحديث للصفحة.";
+  return "حصل خطأ وقت تحميل الكتاب" + (err?.message ? `:<br><small dir="ltr">${err.message}</small>` : ".");
+}
+
 async function openBook(id, page = 1) {
   showTab("book");
   document.querySelectorAll("#books button").forEach(b => b.classList.toggle("on", b.dataset.id === id));
+  const link = $("openTab"); link.href = pdf(id) + "#page=" + page; link.hidden = false;
   if (cur.id !== id || !doc) {
-    $("cv").hidden = true; $("vmsg").hidden = false; $("vmsg").textContent = "جاري تحميل الكتاب...";
-    try { doc = await pdfjsLib.getDocument(pdf(id)).promise; cur.id = id; }
-    catch { doc = null; cur.id = null; $("vmsg").textContent = "الكتاب مش موجود. ضع ملف الـ PDF في مجلد pdfs بنفس الاسم."; return; }
+    if (docs[id]) { doc = docs[id]; cur.id = id; }
+    else {
+      viewerMsg(`<div class="spin"></div><p>جاري تحميل الكتاب... <br><small>الكتب كبيرة، أول مرة ممكن تاخد شوية وقت</small></p><progress id="prog" max="1" value="0"></progress>`);
+      try {
+        // rangeChunkSize + disableAutoFetch: بيحمّل الصفحات المطلوبة بس مش الملف كله (الملفات 30-70 ميجا)
+        const t = pdfjsLib.getDocument({ url: pdf(id), rangeChunkSize: 1 << 18, disableAutoFetch: true, disableStream: false });
+        t.onProgress = p => { const el = $("prog"); if (el && p.total) el.value = p.loaded / p.total; };
+        doc = await t.promise; docs[id] = doc; cur.id = id;
+      } catch (err) {
+        console.error(err); doc = null; cur.id = null;
+        viewerMsg(`<div class="big">⚠️</div><p>${errText(err)}</p><p style="margin-top:10px"><a href="${pdf(id)}" target="_blank" rel="noopener">فتح الملف في تبويب جديد ↗</a></p>`, "err");
+        return;
+      }
+    }
   }
-  $("vmsg").hidden = true; $("cv").hidden = false; showPage(page);
+  $("vmsg").hidden = true; $("cv").hidden = false; await showPage(page);
 }
+
 async function showPage(n) {
   if (!doc) return;
-  n = Math.min(Math.max(1, n), doc.numPages); cur.page = n; $("pn").value = n; $("pt").textContent = "/ " + doc.numPages;
-  const pg = await doc.getPage(n), wrap = $("wrap"), cv = $("cv"), dpr = window.devicePixelRatio || 1;
-  const fit = (wrap.clientWidth - 24) / pg.getViewport({ scale:1 }).width, vp = pg.getViewport({ scale: fit * zoom });
-  cv.width = vp.width * dpr; cv.height = vp.height * dpr; cv.style.width = vp.width + "px";
-  if (task) task.cancel();
-  task = pg.render({ canvasContext: cv.getContext("2d"), viewport: vp, transform: dpr !== 1 ? [dpr,0,0,dpr,0,0] : null });
-  try { await task.promise; } catch {}
-  wrap.scrollTop = 0;
+  const my = ++renderId, id = cur.id;
+  n = Math.min(Math.max(1, Math.floor(n) || 1), doc.numPages); cur.page = n;
+  $("pn").value = n; $("pn").max = doc.numPages; $("pt").textContent = "/ " + doc.numPages;
+  $("openTab").href = pdf(id) + "#page=" + n;
+  try {
+    const pg = await doc.getPage(n); if (my !== renderId) return;
+    const wrap = $("wrap"), cv = $("cv"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const fit = Math.max(120, wrap.clientWidth - 28) / pg.getViewport({ scale:1 }).width, vp = pg.getViewport({ scale: fit * zoom });
+    if (task) { task.cancel(); try { await task.promise; } catch {} }
+    if (my !== renderId) return;
+    cv.width = Math.floor(vp.width * dpr); cv.height = Math.floor(vp.height * dpr);
+    cv.style.width = Math.floor(vp.width) + "px"; cv.style.height = Math.floor(vp.height) + "px";
+    task = pg.render({ canvasContext: cv.getContext("2d"), viewport: vp, transform: dpr !== 1 ? [dpr,0,0,dpr,0,0] : null });
+    try { await task.promise; } catch {}
+    if (my === renderId) wrap.scrollTop = 0;
+  } catch (err) { console.error(err); if (my === renderId) viewerMsg(`<div class="big">⚠️</div><p>مقدرتش أعرض الصفحة ${n}.</p>`, "err"); }
 }
 $("prev").onclick = () => showPage(cur.page - 1); $("next").onclick = () => showPage(cur.page + 1);
 $("pn").onchange = e => showPage(+e.target.value);
 $("zi").onclick = () => { zoom = Math.min(3, zoom + .25); showPage(cur.page); }; $("zo").onclick = () => { zoom = Math.max(.5, zoom - .25); showPage(cur.page); };
+document.addEventListener("keydown", e => {
+  if (!doc || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+  if (e.key === "ArrowLeft") showPage(cur.page + 1); else if (e.key === "ArrowRight") showPage(cur.page - 1);
+});
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => doc && showPage(cur.page), 200); });
 document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.t));
 
 function search(q, book) {
@@ -100,7 +141,7 @@ async function ask(q, hits) {
 $("form").onsubmit = async e => {
   e.preventDefault(); const q = $("q").value.trim(); if (!q) return;
   $("q").value = ""; add("u", q); const btn = e.target.querySelector("button"); btn.disabled = true;
-  const wait = add("a","...");
+  const wait = add("a","بفكر...‏"); wait.classList.add("typing");
   try { const hits = search(q + " " + (history.at(-2)?.content||""), $("book").value); const a = await ask(q, hits);
     wait.remove(); add("a", a, hits); }
   catch (err) { wait.remove(); add("a","خطأ: " + err.message); }

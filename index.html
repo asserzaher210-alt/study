@@ -2,42 +2,64 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b59c3">
 <title>مساعد المذاكرة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <h1>📚 مساعد المذاكرة - أول ثانوي</h1>
-  <button id="settingsBtn" title="الإعدادات">⚙️</button>
+  <div class="brand"><span class="logo">📚</span><div><h1>مساعد المذاكرة</h1><small>الصف الأول الثانوي</small></div></div>
+  <button id="settingsBtn" class="icon" title="الإعدادات" aria-label="الإعدادات">⚙️</button>
 </header>
+
 <section id="settings" hidden>
-  <label>مفتاح Anthropic API الخاص بك (بيتحفظ في متصفحك فقط)</label>
-  <input id="key" type="password" placeholder="sk-ant-..." dir="ltr">
-  <button id="saveKey">حفظ</button>
+  <label for="key">مفتاح Anthropic API الخاص بك <small>(بيتحفظ في متصفحك فقط)</small></label>
+  <div class="row">
+    <input id="key" type="password" placeholder="sk-ant-..." dir="ltr">
+    <button id="saveKey">حفظ</button>
+  </div>
 </section>
-<nav id="tabs"><button data-t="book" class="on">📖 الكتاب</button><button data-t="chat">💬 المساعد</button></nav>
+
+<nav id="tabs">
+  <button data-t="book" class="on">📖 الكتاب</button>
+  <button data-t="chat">💬 المساعد</button>
+</nav>
+
 <div id="app" class="show-book">
   <section id="viewer">
     <div id="books"></div>
     <div id="bar">
-      <button id="prev">▶</button>
-      <input id="pn" type="number" min="1" value="1"><span id="pt"></span>
-      <button id="next">◀</button>
-      <button id="zo">−</button><button id="zi">+</button>
+      <button id="prev" class="icon" title="الصفحة السابقة">▶</button>
+      <input id="pn" type="number" min="1" value="1" aria-label="رقم الصفحة"><span id="pt"></span>
+      <button id="next" class="icon" title="الصفحة التالية">◀</button>
+      <span class="sep"></span>
+      <button id="zo" class="icon" title="تصغير">−</button>
+      <button id="zi" class="icon" title="تكبير">+</button>
+      <a id="openTab" class="icon" target="_blank" rel="noopener" title="فتح في تبويب جديد" hidden>↗</a>
     </div>
-    <div id="wrap"><p id="vmsg">اختار كتاب من فوق عشان يفتح هنا 📖</p><canvas id="cv" hidden></canvas></div>
+    <div id="wrap">
+      <div id="vmsg"><div class="big">📖</div><p>اختار كتاب من فوق عشان يفتح هنا</p></div>
+      <canvas id="cv" hidden></canvas>
+    </div>
   </section>
+
   <section id="side">
     <main id="chat"></main>
     <form id="form">
-      <select id="book"></select>
-      <textarea id="q" rows="2" placeholder="اكتب سؤالك هنا..." required></textarea>
-      <button>إرسال</button>
+      <select id="book" aria-label="الكتاب"></select>
+      <div class="row">
+        <textarea id="q" rows="2" placeholder="اكتب سؤالك هنا..." required></textarea>
+        <button id="send">إرسال</button>
+      </div>
     </form>
   </section>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script src="lib/pdf.min.js"></script>
 <script src="data/pages.js"></script>
 <script src="app.js"></script>
 </body>
